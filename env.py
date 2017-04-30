@@ -25,7 +25,7 @@ class DiscreteEnvironment:
             if self.transition_by_function:
                 return self.dynamics(state, action)
             else:
-                return np.random.choice(self.env.states, 1, p=self.dynamics[state, action])
+                return np.random.choice(self.env.states, p=self.dynamics[state, action])[0]
 
     def __init__(self, n_states, terminal_states, n_actions, transition_matrix, rewards):
         self.state_space = Discrete(n_states)

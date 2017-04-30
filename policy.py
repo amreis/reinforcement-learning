@@ -1,11 +1,10 @@
 import numpy as np
-import gym
 from gym.spaces import Discrete, Box # Let's deal with those for now.
 
 class DiscretePolicy:
     """
     This is the first implementation of a Policy abstraction that I've done in my life.
-    
+
     """
     def __init__(self, state_space, action_space):
         if isinstance(state_space, Discrete):
@@ -19,5 +18,5 @@ class DiscretePolicy:
         self.state_space = state_space
 
     def step(self, state):
-        return np.random.choice(np.arange(self.action_space.n, dtype=np.int), 1, p=self.policy[state])[0]
+        return np.random.choice(np.arange(self.action_space.n, dtype=np.int), p=self.policy[state])
 
