@@ -1,9 +1,10 @@
 from env import DiscreteEnvironment
-from policy import DiscretePolicy
+from policy import DiscretePolicy, ContinuousStatePolicy
 
 import numpy as np
 from gym.spaces import Box, Discrete
 
+import gym
 
 def simple_dynamics(state, action):
     if action == 0:
@@ -57,6 +58,12 @@ print('State values:\n{}'.format(
 ))
 print('Action Values:\n{}'.format(
     dict(enumerate(action_val))
+))
+env_2 = gym.make('CartPole-v0')
+policy_2 = ContinuousStatePolicy(env_2.observation_space, env_2.action_space)
+state_val = MonteCarlo.approx_state_value_eval(env_2, policy_2, print_every=100)
+print('State Value calculated using Monte-Carlo weight vector:\n{}'.format(
+    state_val.get_weight_vector()
 ))
 
 from policy_evaluation import TDZero
