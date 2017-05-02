@@ -192,8 +192,10 @@ class TDLambda:
                 eligibility[cur_state][action] += 1
                 new_st, reward, done, *_ = env.step(action)
                 next_action = policy.step(new_st)
-                action_values[cur_state][action] += \
-                    learning_rate * eligibility[cur_state][action] * (reward + action_values[new_st][next_action] - action_values[cur_state][action])
+                error = reward + action_values[new_st][next_action] - action_values[cur_state][action]
+                for s in range(env.state_space.n):
+                    for a in range(env.action_space.n):
+                        action_values[s][a] += learning_rate * eligibility[cur_state][action] * error
                 cur_state, action = new_st, next_action
             if print_every != None and episode % print_every == 0:
                 print('Action-Value estimation:\n{}'.format(action_values))
@@ -216,9 +218,9 @@ class TDLambda:
                 eligibility[cur_state] += 1
                 action = policy.step(cur_state)
                 new_st, reward, done, *_ = env.step(action)
-                state_values[cur_state] += \
-                    learning_rate * eligibility[cur_state] * \
-                    (reward + state_values[new_st] - state_values[cur_state])
+                error = reward + state_values[new_st] - state_values[cur_state]
+                for s in range(env.state_space.n):
+                    state_values[s] += learning_rate * eligibility[s] * error
                 cur_state = new_st
             if print_every != None and episode % print_every == 0:
                 print('Action-Value estimation:\n{}'.format(state_values))
