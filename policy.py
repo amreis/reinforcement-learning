@@ -15,7 +15,7 @@ class DiscretePolicy(Policy):
 
     """
     def __init__(self, state_space, action_space):
-        super(Policy, self).__init__()
+        super(DiscretePolicy, self).__init__(state_space, action_space)
         self.policy = np.ones((state_space.n, action_space.n)) * (1 / action_space.n)
         self.action_space = action_space
         self.state_space = state_space
@@ -26,7 +26,7 @@ class DiscretePolicy(Policy):
 
 class ContinuousStatePolicy(Policy):
     def __init__(self, state_space, action_space):
-        super(ContinuousStatePolicy, self).__init__()
+        super(ContinuousStatePolicy, self).__init__(state_space, action_space)
         self.action_space = action_space
         self.state_space = state_space
 

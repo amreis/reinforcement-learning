@@ -58,3 +58,7 @@ class LinearApproximator:
 
     def update_w(self, delta, learning_rate=0.01):
         self._w += learning_rate * delta
+
+
+    def get_weight_vector(self):
+        return self._w

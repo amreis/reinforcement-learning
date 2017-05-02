@@ -6,6 +6,23 @@ from util import LinearApproximator
 
 class MonteCarlo:
     @staticmethod
+    def _run_episode(env, policy, with_actions):
+        done = False
+        cur_st = env.reset()
+        rewards = [0.0]
+        visited_states = []
+        while not done:
+            action = policy.step(cur_st)
+            if with_actions:
+                visited_states.append((cur_st, action))
+            else:
+                visited_states.append(cur_st)
+            new_st, reward, done, *_ = env.step(action)
+            rewards.append(reward)
+            cur_st = new_st
+        return visited_states, rewards
+
+    @staticmethod
     def state_value_eval(env, policy,
                          discount=0.999,
                          learning_rate=0.01,
@@ -27,16 +44,7 @@ class MonteCarlo:
         state_values = [0.0 for _ in range(env.state_space.n)]
 
         for episode in range(n_iter):
-            done = False
-            cur_state = env.reset()
-            rewards = [0.0]
-            visited_states = []
-            while not done:
-                visited_states.append(cur_state)
-                action = policy.step(cur_state)
-                new_st, reward, done, *_ = env.step(action)
-                rewards.append(reward)
-                cur_state = new_st
+            visited_states, rewards = MonteCarlo._run_episode(env, policy, with_actions=False)
             for i, state in enumerate(visited_states):
                 if i + 1 >= len(rewards):
                     break
@@ -55,16 +63,7 @@ class MonteCarlo:
                                 n_iter=1000, print_every=None):
         state_values = LinearApproximator(lambda x: x, env.observation_space.shape[0])
         for episode in range(n_iter):
-            done = False
-            cur_state = env.reset()
-            rewards = [0.0]
-            visited_states = []
-            while not done:
-                visited_states.append(cur_state)
-                action = policy.step(cur_state)
-                new_st, reward, done, *_ = env.step(action)
-                rewards.append(reward)
-                cur_state = new_st
+            visited_states, rewards = MonteCarlo._run_episode(env, policy, with_actions=False)
             for i, state in enumerate(visited_states):
                 if i + 1 >= len(rewards):
                     break
@@ -87,16 +86,7 @@ class MonteCarlo:
         action_values = [[0.0 for _ in range(env.action_space.n)] for _ in range(env.state_space.n)]
 
         for episode in range(n_iter):
-            done = False
-            cur_state = env.reset()
-            rewards = [0.0]
-            visited_state_action_pairs = []
-            while not done:
-                action = policy.step(cur_state)
-                visited_state_action_pairs.append((cur_state, action))
-                new_st, reward, done, *_ = env.step(action)
-                rewards.append(reward)
-                cur_state = new_st
+            visited_state_action_pairs, rewards = MonteCarlo._run_episode(env, policy, with_actions=True)
             for i, (state, action) in enumerate(visited_state_action_pairs):
                 if i + 1 >= len(rewards):
                     break
@@ -195,7 +185,7 @@ class TDLambda:
                 error = reward + action_values[new_st][next_action] - action_values[cur_state][action]
                 for s in range(env.state_space.n):
                     for a in range(env.action_space.n):
-                        action_values[s][a] += learning_rate * eligibility[cur_state][action] * error
+                        action_values[s][a] += learning_rate * eligibility[s][a] * error
                 cur_state, action = new_st, next_action
             if print_every != None and episode % print_every == 0:
                 print('Action-Value estimation:\n{}'.format(action_values))

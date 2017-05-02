@@ -78,7 +78,7 @@ print('Action Values:\n{}'.format(
 ))
 
 from policy_evaluation import TDLambda
-lamb = 0.1
+lamb = 0.9
 state_val = TDLambda.state_value_eval(env, policy, lamb)
 action_val = TDLambda.action_value_eval(env, policy, lamb)
 print('TD(lambda={:.3f}) Results:'.format(lamb))
