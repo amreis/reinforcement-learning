@@ -139,6 +139,7 @@ class TDZero:
                 cur_state = new_st
         return state_values
 
+    # is this SARSA? TODO verify
     @staticmethod
     def action_value_eval(env, policy,
                           discount=0.999,
@@ -153,7 +154,7 @@ class TDZero:
                 new_st, reward, done, *_ = env.step(action)
                 next_action = policy.step(new_st)
                 action_values[cur_state][action] += \
-                    learning_rate * (reward + action_values[new_st][next_action] - action_values[cur_state][action])
+                    learning_rate * (reward + discount * action_values[new_st][next_action] - action_values[cur_state][action])
                 cur_state = new_st
                 action = next_action
             if print_every is not None and episode % print_every == 0:
@@ -163,6 +164,7 @@ class TDZero:
 
 
 class TDLambda:
+    # is this SARSA-lambda? TODO verify
     @staticmethod
     def action_value_eval(env, policy, lamb,
             discount=0.999,
